@@ -1,26 +1,78 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, {useState, useEffect} from 'react';
 
 function App() {
+  const [tasks, setTasks] = useState(false);
+  useEffect(() => {
+    getTasks();
+  }, []);
+  function getTask() {
+    fetch('http://localhost:3001')
+      .then(response => {
+        return response.text();
+      })
+      .then(data => {
+        setTasks(data);
+      });
+  }
+  function createTasks() {
+    let name = prompt('Tasks');
+    fetch('http://localhost:3001/tasks', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({name}),
+    })
+      .then(response => {
+        return response.text();
+      })
+      .then(data => {
+        alert(data);
+        getTasks();
+      });
+  }
+  function deleteTask() {
+    let id = prompt('Enter task id');
+    fetch(`http://localhost:3001/tasks/${id}`, {
+      method: 'DELETE',
+    })
+      .then(response => {
+        return response.text();
+      })
+      .then(data => {
+        alert(data);
+        getTasks();
+      });
+  }
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      {tasks ? tasks : 'There are no tasks available'}
+      <br />
+      <button onClick={createTask}>Add Task</button>
+      <br />
+      <button onClick={deleteTask}>Delete Task</button>
     </div>
   );
 }
-
 export default App;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
